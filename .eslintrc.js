@@ -83,16 +83,14 @@ module.exports = defineConfig({
         tryExtensions: ['.ts', '.js', '.jsx', '.tsx', '.d.ts'],
       },
     ],
-
     'node/no-unpublished-import': 'off',
     'node/no-unsupported-features/es-syntax': 'off',
-
     '@typescript-eslint/ban-ts-comment': 'error',
     '@typescript-eslint/ban-types': 'error',
-    '@typescript-eslint/explicit-module-boundary-types': 'warn',
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-empty-function': 'error',
     '@typescript-eslint/no-empty-interface': 'warn',
-    '@typescript-eslint/no-explicit-any': 'warn',
+    '@typescript-eslint/no-explicit-any': 'off',
     '@typescript-eslint/no-extra-semi': 'error',
     '@typescript-eslint/no-inferrable-types': 'error',
     '@typescript-eslint/no-non-null-assertion': 'warn',
