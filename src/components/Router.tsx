@@ -10,7 +10,7 @@ const RouterProvider = createContext<RouterProps>({} as RouterProps);
 export const useRouter = (): RouterProps => useContext(RouterProvider);
 
 export const Router: React.FC = ({ children }) => {
-  const [routerName, setRouterName] = useState<string>('game');
+  const [routerName, setRouterName] = useState<string>('start');
 
   const setRouter = (name: string) => {
     setRouterName(name);

@@ -38,3 +38,23 @@ Mock.mock('/api/user', 'put', (options: { body?: string }) => {
     success: true,
   };
 });
+
+Mock.mock('/api/user/rest', 'post', () => {
+  if (user.hp >= MAX_HP) {
+    return {
+      success: false,
+    };
+  }
+  const getHP = Mock.Random.integer(1, 5);
+
+  updateUser({
+    hp: user.hp + getHP,
+  });
+
+  return {
+    success: true,
+    data: {
+      hp: getHP,
+    },
+  };
+});

@@ -4,19 +4,19 @@ import { Badge, Box, Button, HStack, Text, useToast } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 
-import { getCourseInfo, getCourseList } from '@/axios/course';
 import { getUser } from '@/axios/user';
+import { getWorkInfo, getWorkList } from '@/axios/work';
 import { getDisabledStatus } from '@/utils';
 
-export const Course: React.VFC<{
+export const Work: React.VFC<{
   hasTimer: boolean;
   setTimer: (func: any, timeout?: number) => void;
   clearTimer: () => void;
 }> = ({ hasTimer, setTimer, clearTimer }) => {
   const [activeId, setActiveId] = useState<number>();
   const toast = useToast();
-  const { data: list } = useQuery('course', () => {
-    return getCourseList();
+  const { data: list } = useQuery('works', () => {
+    return getWorkList();
   });
   const { refetch, data: user } = useQuery('user', () => {
     return getUser();
@@ -30,13 +30,13 @@ export const Course: React.VFC<{
 
   const timerFunc = async (id: number) => {
     try {
-      const resp = await getCourseInfo(id);
+      const resp = await getWorkInfo(id);
 
       if (resp.data) {
         const info = resp.data;
         refetch();
         toast({
-          description: `获得经验${info.exp}，健康值受损${info.damage}`,
+          description: `获得经验${info.exp}，健康值受损${info.damage}，获得金币${info.gold}`,
           position: 'top-right',
           status: 'success',
           duration: 1500,
@@ -55,7 +55,7 @@ export const Course: React.VFC<{
     }
 
     toast({
-      title: `正在学习：${item.name}`,
+      title: `正在打工：${item.name}`,
       description: '已取消上一个任务',
       position: 'top-right',
       duration: 3000,
@@ -76,7 +76,7 @@ export const Course: React.VFC<{
         <Box key={item.id} borderWidth="1px" borderRadius="lg" p={2}>
           <Text>
             <Badge mr={1} colorScheme="blue">
-              课程名：
+              工作：
             </Badge>
             <Badge>{item.name}</Badge>
           </Text>
@@ -102,6 +102,23 @@ export const Course: React.VFC<{
               {item.damage.min}-{item.damage.max}
             </Badge>
           </Text>
+          <Text>
+            <Badge mr={1} colorScheme="blue">
+              每{item.timeout}秒会获得金币：
+            </Badge>
+            <Badge>
+              {item.gold.min}-{item.gold.max}
+            </Badge>
+          </Text>
+          <Text>
+            <Badge mr={1} colorScheme="blue">
+              打工时间：
+            </Badge>
+            <Badge>
+              {String(item.time.start).split(' ')[1]} -{' '}
+              {String(item.time.end).split(' ')[1]}
+            </Badge>
+          </Text>
 
           <HStack justify="end">
             <Button
@@ -109,9 +126,9 @@ export const Course: React.VFC<{
               disabled={getDisabledStatus(user, item)}
               isLoading={activeId === item.id}
               onClick={() => onStartLearn(item)}
-              loadingText="取消学习"
+              loadingText="取消打工"
             >
-              开始学习
+              开始打工
             </Button>
           </HStack>
         </Box>

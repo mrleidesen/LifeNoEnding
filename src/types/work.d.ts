@@ -13,4 +13,5 @@ export interface TWork {
   exp: TLimit;
   time: TTimeLimit;
   limit: number;
+  timeout: number;
 }

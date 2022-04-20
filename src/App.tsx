@@ -46,7 +46,7 @@ const GameStart: React.VFC = () => {
       <Text className="text-gray-700 font-semibold text-3xl">
         LifeNoFukinEnding
       </Text>
-      <Text>v0.0.1</Text>
+      <Text>v0.0.1 - 摆烂了</Text>
       <div className="w-1/2">
         <Input
           placeholder="请输入你的名字开始游戏"

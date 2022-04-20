@@ -1,14 +1,12 @@
+import type { ResponseInfo } from '@/types';
 import type { TCourse } from '@/types/course';
 
 import service from '.';
 
-type CourseInfoResponse = {
-  success: boolean;
-  data?: {
-    exp: number;
-    damage: number;
-  };
-};
+type CourseInfoResponse = ResponseInfo<{
+  exp: number;
+  damage: number;
+}>;
 
 export const getCourseList = () => {
   return service.get<TCourse[], TCourse[]>('/course');
