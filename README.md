@@ -1,18 +1,14 @@
-# react-vite-tailwind-template
+# Life No Ending
 
-已经集成 `vite2`+`react-ts`+`tailwind css v3`+`alias`+`eslint`+`prettier`+`react-query`
+就是一个打工仔模拟器（更像是资本家模拟器）
 
-## 下载
+## 目标
 
-- 通过`Download ZIP`
-- Git clone
+赚到 100 万 ！！
 
-```
-git clone https://github.com/mrleidesen/react-vite-tailwind-template.git
-```
+## 玩法
 
-## 运行
-
-> pnpm install
-
-> pnpm dev
+1. 健康值低于 0 将处于活死人状态，员工会在摸鱼和工作之间随机，最大值均是自己的最大值
+2. 休息可持续恢复健康值，如果健康值低于 0，恢复时会员工会随机偷取工资
+3. 招工需要花钱
+4. 大约 30 秒左右存档一次
