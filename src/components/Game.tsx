@@ -102,7 +102,7 @@ export const Game: React.VFC = () => {
   }, [clearTimer, isRest, timer, user]);
 
   useEffect(() => {
-    if (user && user.hp <= 0 && timer) {
+    if (user && user.hp <= 0 && timer && !isRest) {
       clearTimer();
       toast({
         title: '健康值小于0',
@@ -113,7 +113,7 @@ export const Game: React.VFC = () => {
         isClosable: true,
       });
     }
-  }, [clearTimer, timer, toast, user]);
+  }, [clearTimer, isRest, timer, toast, user]);
 
   useEffect(() => {
     const now = Date.now();
