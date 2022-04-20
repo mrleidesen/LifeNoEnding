@@ -9,7 +9,7 @@ import { Game } from '@/components/Game';
 import { Route, Router, useRouter } from '@/components/Router';
 
 import { reloadEmployeeSave, updateUserInfo } from './axios';
-import { SAVE_EMPLOYEE_KEY, SAVE_USER_KEY } from './constance';
+import { SAVE_EMPLOYEE_KEY, SAVE_USER_KEY, VERSION } from './constance';
 
 const queryClient = new QueryClient();
 
@@ -49,7 +49,7 @@ const GameStart: React.VFC = () => {
   return (
     <div className="w-full h-full flex flex-col items-center justify-center gap-4">
       <Text className="text-gray-700 font-semibold text-3xl">LifeNoEnding</Text>
-      <Text>v1.0.0 - 摆烂了</Text>
+      <Text>v{VERSION} - 摆烂了</Text>
       <div className="w-1/2">
         <Input
           placeholder="请输入你的名字开始游戏"

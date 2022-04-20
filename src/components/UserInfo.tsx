@@ -11,7 +11,12 @@ import {
 } from '@chakra-ui/react';
 import React, { useCallback, useEffect, useState } from 'react';
 
-import { employeeRest, employeeWork, getSingleEmployee } from '@/axios';
+import {
+  employeeHospital,
+  employeeRest,
+  employeeWork,
+  getSingleEmployee,
+} from '@/axios';
 
 export const UserInfo: React.VFC<{
   user: TUser;
@@ -143,6 +148,27 @@ export const EmpolyeeInfo: React.VFC<{
     });
   };
 
+  const goToHospital = () => {
+    employeeHospital(user.id).then((resp) => {
+      if (resp?.success) {
+        if (refetch) {
+          refetch();
+          toast({
+            title: resp?.message ?? '住院成功',
+            position: 'top-right',
+            status: 'success',
+          });
+        }
+      } else {
+        toast({
+          title: resp?.message ?? '出错了',
+          position: 'top-left',
+          status: 'error',
+        });
+      }
+    });
+  };
+
   useEffect(() => {
     if (timer && isResting && user.hp === user.maxHP) {
       clearTimer();
@@ -208,6 +234,13 @@ export const EmpolyeeInfo: React.VFC<{
               disabled={user.hp === user.maxHP}
             >
               休息
+            </Button>
+            <Button
+              colorScheme="yellow"
+              disabled={user.hp > 0}
+              onClick={goToHospital}
+            >
+              住院 - 价格 {Math.max(Math.ceil(user.price / 2), 300)}
             </Button>
           </ButtonGroup>
         </>

@@ -39,7 +39,7 @@ const EmployeeList: TEmployee[] = [
     name: '小刘',
     gold: {
       min: 0,
-      max: 10,
+      max: 100,
     },
     damage: { min: 0, max: 2 },
     timeout: 3,
@@ -52,42 +52,56 @@ const EmployeeList: TEmployee[] = [
     id: 2,
     name: '小张',
     gold: {
-      min: 1,
-      max: 20,
+      min: 50,
+      max: 200,
     },
-    damage: { min: 0, max: 5 },
+    damage: { min: 0, max: 3 },
     timeout: 5,
     hp: 100,
     maxHP: 100,
-    price: 100,
+    price: 1000,
     total: 0,
   },
   {
     id: 3,
     name: '小王',
     gold: {
-      min: 10,
-      max: 50,
+      min: 100,
+      max: 350,
     },
-    damage: { min: 0, max: 10 },
-    timeout: 5,
-    hp: 70,
-    maxHP: 70,
-    price: 500,
+    damage: { min: 2, max: 5 },
+    timeout: 7,
+    hp: 100,
+    maxHP: 100,
+    price: 5000,
     total: 0,
   },
   {
     id: 4,
     name: '卷仔',
     gold: {
-      min: -100,
-      max: 200,
+      min: -500,
+      max: 1500,
     },
     damage: { min: -5, max: 10 },
-    timeout: 3,
+    timeout: 5,
     hp: 150,
     maxHP: 150,
-    price: 1000,
+    price: 10000,
+    total: 0,
+  },
+  {
+    id: 5,
+    name: 'Sakura',
+    gold: {
+      min: 0,
+      max: 10000,
+    },
+    damage: { min: 10, max: 20 },
+    timeout: 10,
+    hp: 150,
+    maxHP: 150,
+    price: 100000,
     total: 0,
   },
 ];
@@ -243,7 +257,7 @@ Mock.mock('/api/employee/rest', 'post', (options: TOptions) => {
     };
   }
 
-  const heal = Random.integer(0, 5);
+  const heal = Random.integer(1, Math.floor(employee.maxHP / 10));
   const newHP = Math.min(employee.hp + heal, employee.maxHP);
   const deadAlive = newHP <= 0;
   const getGold = deadAlive
@@ -268,5 +282,42 @@ Mock.mock('/api/employee/rest', 'post', (options: TOptions) => {
       gold: getGold,
       heal,
     },
+  };
+});
+
+Mock.mock('/api/employee/hospital', 'post', (options: TOptions) => {
+  const data = JSON.parse(options?.body ?? '{}');
+  const employee = UserEmployeeList.find((item) => item.id === data?.id);
+
+  if (!employee) {
+    return {
+      success: false,
+      message: '没有找到该员工',
+    };
+  }
+  if (employee.hp > 0) {
+    return {
+      success: false,
+      message: '该员工不需要住院',
+    };
+  }
+
+  const gold = Math.max(Math.ceil(employee.price / 2), 300);
+
+  updateUserEmployeeList(
+    {
+      ...employee,
+      total: employee.total - gold,
+      hp: 1,
+    },
+    'update'
+  );
+  updateUserInfo({
+    gold: User.gold - gold,
+  });
+
+  return {
+    success: true,
+    message: `${employee.name}已经住院成功，花费了${gold}金币`,
   };
 });

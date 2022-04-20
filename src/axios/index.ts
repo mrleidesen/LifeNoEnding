@@ -56,4 +56,13 @@ export const employeeRest = (id: number) => {
   });
 };
 
+export const employeeHospital = (id: number) => {
+  return service.post<ResponseInfo<any>, ResponseInfo<any>>(
+    `/employee/hospital`,
+    {
+      id,
+    }
+  );
+};
+
 export default service;
