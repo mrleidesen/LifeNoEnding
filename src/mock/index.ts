@@ -223,7 +223,7 @@ Mock.mock('/api/employee/work', 'post', (options: TOptions) => {
     updateUserEmployeeList(employee, 'delete');
     return {
       success: false,
-      message: '员工跑路了',
+      message: `员工${employee.name}跑路了`,
     };
   }
 

@@ -91,7 +91,8 @@ export const EmpolyeeInfo: React.VFC<{
                 title: resp?.message ?? '出错了',
                 position: 'top-left',
                 status: 'error',
-                duration: 2000,
+                duration: null,
+                isClosable: true,
               });
             }
           });
