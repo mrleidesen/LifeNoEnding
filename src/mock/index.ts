@@ -219,6 +219,14 @@ Mock.mock('/api/employee/work', 'post', (options: TOptions) => {
     ? Random.integer(-employee.gold.max, employee.gold.max)
     : Random.integer(employee.gold.min, employee.gold.max);
 
+  if (Random.boolean(1, 10, true) && employee.hp < -200) {
+    updateUserEmployeeList(employee, 'delete');
+    return {
+      success: false,
+      message: '员工跑路了',
+    };
+  }
+
   updateUserEmployeeList(
     {
       ...employee,

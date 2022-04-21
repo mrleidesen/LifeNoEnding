@@ -53,6 +53,7 @@ export const EmpolyeeInfo: React.VFC<{
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const [isWorking, setIsWorking] = useState(false);
   const [isResting, setIsResting] = useState(false);
+  const [isError, setIsError] = useState(false);
 
   const clearTimer = useCallback(() => {
     if (timer) {
@@ -60,6 +61,7 @@ export const EmpolyeeInfo: React.VFC<{
       setTimer(null);
       setIsWorking(false);
       setIsResting(false);
+      setIsError(false);
       toast({
         title: '已取消任务',
         duration: 1500,
@@ -84,12 +86,12 @@ export const EmpolyeeInfo: React.VFC<{
                 refetch();
               }
             } else {
+              setIsError(true);
               toast({
                 title: resp?.message ?? '出错了',
                 position: 'top-left',
                 status: 'error',
-                duration: null,
-                isClosable: true,
+                duration: 2000,
               });
             }
           });
@@ -107,13 +109,12 @@ export const EmpolyeeInfo: React.VFC<{
                 refetch();
               }
             } else {
-              clearTimer();
+              setIsError(true);
               toast({
                 title: resp?.message ?? '出错了',
                 position: 'top-left',
                 status: 'error',
-                duration: null,
-                isClosable: true,
+                duration: 2000,
               });
             }
           });
@@ -170,10 +171,13 @@ export const EmpolyeeInfo: React.VFC<{
   };
 
   useEffect(() => {
-    if (timer && isResting && user.hp === user.maxHP) {
+    if (timer && isError) {
       clearTimer();
+      if (refetch) {
+        refetch();
+      }
     }
-  }, [clearTimer, isResting, timer, user.hp, user.maxHP]);
+  }, [clearTimer, isError, refetch, timer]);
 
   return (
     <Box borderWidth="1px" borderRadius="lg" p={2}>
