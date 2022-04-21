@@ -74,7 +74,7 @@ export const Game: React.VFC = () => {
           </Box>
         </TabPanel>
       </TabPanels>
-      <TabList flexShrink={0}>
+      <TabList flexShrink={0} paddingBottom="calc(env(safe-area-inset-bottom))">
         <Tab>面板</Tab>
         <Tab>招聘</Tab>
         {/* <Tab>商店</Tab> */}

@@ -216,7 +216,7 @@ export const EmpolyeeInfo: React.VFC<{
             <Badge>{user.total}</Badge>
           </Text>
 
-          <ButtonGroup mt={2}>
+          <ButtonGroup mt={2} flexWrap="wrap" size="sm" gap={1}>
             <Button
               isLoading={isWorking}
               loadingText={'取消打工'}
