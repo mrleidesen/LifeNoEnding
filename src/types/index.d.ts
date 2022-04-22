@@ -6,6 +6,8 @@ export type TLimit = {
 export interface TUser {
   name: string;
   gold: number;
+  achievement: number;
+  employeeCount: number;
 }
 
 export interface TEmployee {
@@ -18,4 +20,10 @@ export interface TEmployee {
   timeout: number;
   total: number;
   maxHP: number;
+}
+
+export interface TShopItem {
+  id: number;
+  name: string;
+  price: number;
 }

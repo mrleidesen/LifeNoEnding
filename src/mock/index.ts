@@ -1,4 +1,4 @@
-import type { TEmployee, TUser } from '@/types';
+import type { TEmployee, TShopItem, TUser } from '@/types';
 
 import Mock from 'mockjs';
 
@@ -11,6 +11,8 @@ const Random = Mock.Random;
 const User: TUser = {
   name: '',
   gold: 0,
+  achievement: 0,
+  employeeCount: 5,
 };
 
 const updateUserInfo = (user: Partial<TUser>) => {
@@ -32,6 +34,14 @@ Mock.mock('/api/user', 'post', (options: TOptions) => {
 });
 
 const UserEmployeeList: TEmployee[] = [];
+
+const Shop: TShopItem[] = [
+  {
+    id: 1,
+    name: '工位扩展+1',
+    price: 300000,
+  },
+];
 
 const EmployeeList: TEmployee[] = [
   {
@@ -92,16 +102,58 @@ const EmployeeList: TEmployee[] = [
   },
   {
     id: 5,
+    name: '双面打工贼',
+    gold: {
+      min: -2000,
+      max: 5000,
+    },
+    damage: { min: 2, max: 10 },
+    timeout: 7,
+    hp: 200,
+    maxHP: 200,
+    price: 50000,
+    total: 0,
+  },
+  {
+    id: 6,
+    name: '打工王',
+    gold: {
+      min: 2000,
+      max: 4000,
+    },
+    damage: { min: 5, max: 10 },
+    timeout: 7,
+    hp: 300,
+    maxHP: 300,
+    price: 100000,
+    total: 0,
+  },
+  {
+    id: 7,
+    name: '学Vue的亲戚',
+    gold: {
+      min: -5000,
+      max: 20000,
+    },
+    damage: { min: 10, max: 20 },
+    timeout: 5,
+    hp: 100,
+    maxHP: 100,
+    price: 100000,
+    total: 0,
+  },
+  {
+    id: 8,
     name: 'Sakura',
     gold: {
       min: 0,
-      max: 10000,
+      max: 15000,
     },
     damage: { min: 10, max: 20 },
     timeout: 10,
     hp: 150,
     maxHP: 150,
-    price: 100000,
+    price: 150000,
     total: 0,
   },
 ];
@@ -129,7 +181,7 @@ const updateUserEmployeeList = (
     }
   }
   if (type === 'get') {
-    if (!isExsit) {
+    if (!isExsit && UserEmployeeList.length < User.employeeCount) {
       UserEmployeeList.push(employee);
     }
   }
@@ -149,6 +201,24 @@ Mock.mock('/api/employee/list', 'get', () => {
 
 Mock.mock('/api/employee/user', 'get', () => {
   return UserEmployeeList;
+});
+
+Mock.mock('/api/employee/fire', 'post', (options: TOptions) => {
+  const data = JSON.parse(options?.body ?? '{}');
+  const employee = UserEmployeeList.find((item) => item.id === data?.id);
+
+  if (!employee) {
+    return {
+      success: false,
+      message: '没有找到该员工',
+    };
+  }
+
+  updateUserEmployeeList(employee, 'delete');
+
+  return {
+    success: true,
+  };
 });
 
 Mock.mock('/api/employee/save', 'post', (options: TOptions) => {
@@ -188,6 +258,12 @@ Mock.mock('/api/employee/get', 'post', (options: TOptions) => {
       message: '金币不足',
     };
   }
+  if (User.employeeCount <= UserEmployeeList.length) {
+    return {
+      success: false,
+      message: '你的员工数量已经达到上限',
+    };
+  }
 
   updateUserInfo({
     gold: User.gold - employee.price,
@@ -219,12 +295,25 @@ Mock.mock('/api/employee/work', 'post', (options: TOptions) => {
     ? Random.integer(-employee.gold.max, employee.gold.max)
     : Random.integer(employee.gold.min, employee.gold.max);
 
-  if (Random.boolean(1, 10, true) && employee.hp < -200) {
+  if (Random.boolean(1, 10, true) && employee.hp < -150) {
     updateUserEmployeeList(employee, 'delete');
-    return {
-      success: false,
-      message: `员工${employee.name}跑路了`,
-    };
+
+    if (Random.boolean(1, 10, true)) {
+      updateUserInfo({
+        gold: User.gold - employee.price * 2,
+      });
+      return {
+        success: false,
+        message: `员工${employee.name}对你发起了劳动仲裁，损失${
+          employee.price * 2
+        }金币`,
+      };
+    } else {
+      return {
+        success: false,
+        message: `员工${employee.name}跑路了`,
+      };
+    }
   }
 
   updateUserEmployeeList(
@@ -235,9 +324,16 @@ Mock.mock('/api/employee/work', 'post', (options: TOptions) => {
     },
     'update'
   );
+
+  const userGold = User.gold + getGold;
   updateUserInfo({
-    gold: User.gold + getGold,
+    gold: userGold,
   });
+  if (User.achievement === 0 && userGold >= 1000000) {
+    updateUserInfo({
+      achievement: 1,
+    });
+  }
 
   return {
     success: true,
@@ -328,4 +424,36 @@ Mock.mock('/api/employee/hospital', 'post', (options: TOptions) => {
     success: true,
     message: `${employee.name}已经住院成功，花费了${gold}金币`,
   };
+});
+
+Mock.mock('/api/shop', 'get', () => {
+  return Shop;
+});
+
+Mock.mock('/api/shop/buy', 'post', (options: TOptions) => {
+  const data = JSON.parse(options?.body ?? '{}');
+  const item = Shop.find((el) => el.id === data?.id);
+
+  if (!item) {
+    return {
+      success: false,
+      message: '没有当前商品',
+    };
+  }
+
+  if (User.gold < item.price) {
+    return {
+      success: false,
+      message: '金币不足',
+    };
+  }
+
+  if (item.id === 1) {
+    updateUserInfo({
+      employeeCount: User.employeeCount + 1,
+    });
+    return {
+      success: true,
+    };
+  }
 });

@@ -15,6 +15,7 @@ import {
   employeeHospital,
   employeeRest,
   employeeWork,
+  fireEmployee,
   getSingleEmployee,
 } from '@/axios';
 
@@ -35,10 +36,31 @@ export const UserInfo: React.VFC<{
         </Badge>
         <Badge>{user.gold}</Badge>
       </Text>
-      <Box mt={2}>
-        <Text>目标 100W ！</Text>
-        <Progress max={1000000} value={user.gold} />
-      </Box>
+      <Text>
+        <Badge mr={1} colorScheme="green">
+          工位：
+        </Badge>
+        <Badge>{user.employeeCount}</Badge>
+      </Text>
+      <Text>
+        {user.achievement === 1 && (
+          <Badge mr={1} colorScheme="green">
+            百万富翁
+          </Badge>
+        )}
+      </Text>
+      {user.achievement === 0 && (
+        <Box mt={2}>
+          <Text>目标 100W ！</Text>
+          <Progress max={1000000} value={user.gold} />
+        </Box>
+      )}
+      {/* {user.achievement === 1 && (
+        <Box mt={2}>
+          <Text>目标 100W ！</Text>
+          <Progress max={1000000} value={user.gold} />
+        </Box>
+      )} */}
     </Box>
   );
 };
@@ -171,6 +193,32 @@ export const EmpolyeeInfo: React.VFC<{
     });
   };
 
+  const handleFire = async () => {
+    try {
+      const resp = await fireEmployee(user.id);
+
+      if (resp?.success) {
+        toast({
+          title: '开除成功',
+          position: 'top-right',
+          status: 'success',
+          duration: 1500,
+        });
+        if (refetch) {
+          refetch();
+        }
+      } else {
+        toast({
+          title: resp?.message ?? '出错了',
+          position: 'top-left',
+          status: 'error',
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     if (timer && isError) {
       clearTimer();
@@ -239,6 +287,9 @@ export const EmpolyeeInfo: React.VFC<{
               disabled={user.hp === user.maxHP}
             >
               休息
+            </Button>
+            <Button colorScheme="red" onClick={handleFire}>
+              辞退
             </Button>
             <Button
               colorScheme="yellow"

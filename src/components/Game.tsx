@@ -2,10 +2,16 @@ import { Box, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import React, { useEffect, useState } from 'react';
 import { useQuery } from 'react-query';
 
-import { getEmployeeList, getUserEmployeeList, getUserInfo } from '@/axios';
+import {
+  getEmployeeList,
+  getShopList,
+  getUserEmployeeList,
+  getUserInfo,
+} from '@/axios';
 
 import { SAVE_EMPLOYEE_KEY, SAVE_USER_KEY } from '@/constance';
 
+import { ShopItem } from './ShopItem';
 import { EmpolyeeInfo, UserInfo } from './UserInfo';
 
 export const Game: React.VFC = () => {
@@ -15,7 +21,8 @@ export const Game: React.VFC = () => {
     'user-employee',
     getUserEmployeeList
   );
-  const { data: shop = [] } = useQuery('shop', getEmployeeList);
+  const { data: employeeList = [] } = useQuery('EmployeeList', getEmployeeList);
+  const { data: shop = [] } = useQuery('shop', getShopList);
   const listIds = list.map((item) => item.id);
 
   const refetch = () => {
@@ -62,7 +69,7 @@ export const Game: React.VFC = () => {
         </TabPanel>
         <TabPanel>
           <Box display="flex" flexDirection="column" gap={2}>
-            {shop.map((employee) => (
+            {employeeList.map((employee) => (
               <EmpolyeeInfo
                 key={employee.id}
                 user={employee}
@@ -73,11 +80,18 @@ export const Game: React.VFC = () => {
             ))}
           </Box>
         </TabPanel>
+        <TabPanel>
+          <Box display="flex" flexDirection="column" gap={2}>
+            {shop.map((item) => (
+              <ShopItem refetch={refetch} item={item} key={item.id} />
+            ))}
+          </Box>
+        </TabPanel>
       </TabPanels>
       <TabList flexShrink={0} paddingBottom="calc(env(safe-area-inset-bottom))">
         <Tab>面板</Tab>
         <Tab>招聘</Tab>
-        {/* <Tab>商店</Tab> */}
+        <Tab>商店</Tab>
       </TabList>
     </Tabs>
   );
