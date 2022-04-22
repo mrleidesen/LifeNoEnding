@@ -1,4 +1,4 @@
-import type { TEmployee, TUser } from '@/types';
+import type { TEmployee, TShopItem, TUser } from '@/types';
 
 import axios from 'axios';
 
@@ -63,6 +63,22 @@ export const employeeHospital = (id: number) => {
       id,
     }
   );
+};
+
+export const fireEmployee = (id: number) => {
+  return service.post<ResponseInfo<any>, ResponseInfo<any>>(`/employee/fire`, {
+    id,
+  });
+};
+
+export const getShopList = () => {
+  return service.get<TShopItem[], TShopItem[]>('/shop');
+};
+
+export const buyShopItem = (id: number) => {
+  return service.post<ResponseInfo<any>, ResponseInfo<any>>(`/shop/buy`, {
+    id,
+  });
 };
 
 export default service;
