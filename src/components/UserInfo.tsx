@@ -65,6 +65,8 @@ export const UserInfo: React.VFC<{
   );
 };
 
+type TActionType = 'work' | 'rest';
+
 export const EmpolyeeInfo: React.VFC<{
   user: TEmployee;
   isEmployee?: boolean;
@@ -76,6 +78,7 @@ export const EmpolyeeInfo: React.VFC<{
   const [isWorking, setIsWorking] = useState(false);
   const [isResting, setIsResting] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [nextType, setNextType] = useState<TActionType>();
 
   const clearTimer = useCallback(() => {
     if (timer) {
@@ -92,59 +95,64 @@ export const EmpolyeeInfo: React.VFC<{
     }
   }, [timer, toast]);
 
-  const onToggleAction = (type: 'work' | 'rest') => {
-    if (timer) {
-      clearTimer();
-      return;
-    }
+  const onToggleAction = useCallback(
+    (type: TActionType) => {
+      const workType = isWorking ? 'rest' : 'work';
+      setNextType(workType);
+      if (timer) {
+        clearTimer();
+        return;
+      }
 
-    if (type === 'work') {
-      setIsWorking(true);
-      setTimer(
-        setInterval(() => {
-          employeeWork(user.id).then((resp) => {
-            if (resp?.success) {
-              if (refetch) {
-                refetch();
+      if (type === 'work') {
+        setIsWorking(true);
+        setTimer(
+          setInterval(() => {
+            employeeWork(user.id).then((resp) => {
+              if (resp?.success) {
+                if (refetch) {
+                  refetch();
+                }
+              } else {
+                setIsError(true);
+                toast({
+                  title: resp?.message ?? '出错了',
+                  position: 'top-left',
+                  status: 'error',
+                  duration: null,
+                  isClosable: true,
+                });
               }
-            } else {
-              setIsError(true);
-              toast({
-                title: resp?.message ?? '出错了',
-                position: 'top-left',
-                status: 'error',
-                duration: null,
-                isClosable: true,
-              });
-            }
-          });
-        }, user.timeout * 1000)
-      );
-    }
+            });
+          }, user.timeout * 1000)
+        );
+      }
 
-    if (type === 'rest') {
-      setIsResting(true);
-      setTimer(
-        setInterval(() => {
-          employeeRest(user.id).then((resp) => {
-            if (resp?.success) {
-              if (refetch) {
-                refetch();
+      if (type === 'rest') {
+        setIsResting(true);
+        setTimer(
+          setInterval(() => {
+            employeeRest(user.id).then((resp) => {
+              if (resp?.success) {
+                if (refetch) {
+                  refetch();
+                }
+              } else {
+                setIsError(true);
+                toast({
+                  title: resp?.message ?? '出错了',
+                  position: 'top-left',
+                  status: 'error',
+                  duration: 2000,
+                });
               }
-            } else {
-              setIsError(true);
-              toast({
-                title: resp?.message ?? '出错了',
-                position: 'top-left',
-                status: 'error',
-                duration: 2000,
-              });
-            }
-          });
-        }, user.timeout * 1000)
-      );
-    }
-  };
+            });
+          }, user.timeout * 1000)
+        );
+      }
+    },
+    [clearTimer, isWorking, refetch, timer, toast, user.id, user.timeout]
+  );
 
   const handleBuy = () => {
     if (isEmployee) {
@@ -227,6 +235,18 @@ export const EmpolyeeInfo: React.VFC<{
       }
     }
   }, [clearTimer, isError, refetch, timer]);
+
+  useEffect(() => {
+    if (nextType && !timer) {
+      onToggleAction(nextType);
+    }
+  }, [nextType, onToggleAction, timer]);
+
+  useEffect(() => {
+    return () => {
+      clearTimer();
+    };
+  }, [clearTimer]);
 
   return (
     <Box borderWidth="1px" borderRadius="lg" p={2}>
